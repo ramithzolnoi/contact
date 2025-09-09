@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import heroLogo from '/logo_with_text_and_tagline.png';
+import QRCodeGenerator from './QRCodeGenerator.jsx';
 
 export default function Layout() {
   return (
@@ -16,6 +17,9 @@ export default function Layout() {
             </div>
           </div>
           <div className="relative z-10 overflow-y-auto max-h-[calc(100vh-40px)] pr-1 custom-scroll">
+            <div className="flex justify-end mb-4">
+              <QRCodeGenerator />
+            </div>
             <Outlet />
           </div>
         </div>
