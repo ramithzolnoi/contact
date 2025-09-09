@@ -4,7 +4,17 @@
 
 /* Custom layer */
 @layer base {
-  body { @apply antialiased font-sans; }
+  html, body { 
+    @apply antialiased font-sans;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  #root {
+    min-height: 100vh;
+    height: auto;
+  }
 }
 
 @layer components {
