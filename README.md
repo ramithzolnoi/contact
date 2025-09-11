@@ -1,12 +1,13 @@
-# Zolnoi Contact Form (Vite + React + Tailwind + Supabase)
+# Zolnoi Contact Form (Vite + React + Tailwind + Airtable)
 
-A lightweight contact capture page for a startup (NASSCOM incubator showcase ready). Collects Name, Email, Company and stores submissions in a Supabase table `contact_submissions`.
+A lightweight contact capture page for a startup (NASSCOM incubator showcase ready). Collects Name, Email, Company and stores submissions in an Airtable base.
 
 ## Stack
 
 - Vite + React 18
 - Tailwind CSS 3
-- Supabase JS v2
+- Airtable JS SDK
+- Framer Motion
 
 ## Quick Start
 
@@ -14,24 +15,15 @@ A lightweight contact capture page for a startup (NASSCOM incubator showcase rea
    ```bash
    npm install
    ```
-2. Copy env:
+2. Set up Airtable:
+   - Create a new Airtable base
+   - Create a table called "Table 1" with fields: Name, Email, Company, Purpose, Comment, Source
+   - Get your API key from https://airtable.com/account
+   - Get your Base ID from your base URL
+3. Create `.env` file:
    ```bash
-   cp .env.example .env
-   # then edit .env with your Supabase project values
-   ```
-3. Create the table in Supabase SQL editor:
-   ```sql
-   create table if not exists public.contact_submissions (
-     id uuid primary key default gen_random_uuid(),
-     name text not null,
-     email text not null,
-     company text not null,
-     source text,
-     created_at timestamptz default now()
-   );
-   -- (Optional) Add RLS
-   alter table public.contact_submissions enable row level security;
-   create policy "Allow insert" on public.contact_submissions for insert using (true) with check (true);
+   VITE_AIRTABLE_API_KEY=your_api_key_here
+   VITE_AIRTABLE_BASE_ID=your_base_id_here
    ```
 4. Run dev server:
    ```bash
@@ -45,15 +37,19 @@ Visit http://localhost:5173
 Defined in `.env` (never commit actual secrets):
 
 ```
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
+VITE_AIRTABLE_API_KEY=your_api_key_here
+VITE_AIRTABLE_BASE_ID=your_base_id_here
 ```
 
-## Notes
+## Features
 
 - Minimal client-side validation (presence + email format)
 - Disabled button until valid
 - Loading spinner + error state
+- Duplicate email detection
+- QR code generator for easy sharing
+- Responsive design with mobile support
+- Founder cards with LinkedIn integration
 - On success, shows founder connect panel with LinkedIn + Website links
 
 ## Production Build
