@@ -40,70 +40,152 @@ export default function QRCodeGenerator() {
       const ctx = canvas.getContext('2d');
       
       // Set canvas size for a more detailed QR code
-      canvas.width = 400;
-      canvas.height = 500;
+      canvas.width = 500;
+      canvas.height = 700;
       
-      // Fill background
-      ctx.fillStyle = '#ffffff';
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#0F172A');
+      gradient.addColorStop(1, '#1E293B');
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Add header with company info
-      ctx.fillStyle = '#0F172A';
-      ctx.fillRect(0, 0, canvas.width, 80);
+      // Add subtle pattern overlay
+      ctx.fillStyle = 'rgba(0, 212, 170, 0.05)';
+      for (let i = 0; i < canvas.width; i += 40) {
+        for (let j = 0; j < canvas.height; j += 40) {
+          ctx.fillRect(i, j, 1, 1);
+        }
+      }
       
-      // Company name
-      ctx.fillStyle = '#00D4AA';
-      ctx.font = 'bold 24px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('ZOLNOI', canvas.width / 2, 30);
-      
-      // Tagline
-      ctx.fillStyle = '#64748B';
-      ctx.font = '12px Arial';
-      ctx.fillText('AI for energy efficiency and sustainability in Manufacturing', canvas.width / 2, 50);
-      
-      // Add QR code (larger)
-      const qrImage = new Image();
-      qrImage.onload = () => {
-        // Draw QR code centered and larger
-        const qrSize = 280;
-        const qrX = (canvas.width - qrSize) / 2;
-        const qrY = 100;
-        ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+      // Load and draw the actual logo
+      const logoImage = new Image();
+      logoImage.crossOrigin = 'anonymous'; // Enable CORS
+      logoImage.onload = () => {
+        // Draw logo at the top
+        const logoWidth = 300;
+        const logoHeight = 80;
+        const logoX = (canvas.width - logoWidth) / 2;
+        const logoY = 30;
+        ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight);
         
-        // Add border around QR code
-        ctx.strokeStyle = '#E2E8F0';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
-        
-        // Add instructions
-        ctx.fillStyle = '#0F172A';
-        ctx.font = 'bold 16px Arial';
-        ctx.fillText('Scan to access our contact form', canvas.width / 2, qrY + qrSize + 30);
-        
-        // Add URL
-        ctx.fillStyle = '#64748B';
-        ctx.font = '12px Arial';
-        ctx.fillText(window.location.href, canvas.width / 2, qrY + qrSize + 50);
-        
-        // Add footer
-        ctx.fillStyle = '#94A3B8';
-        ctx.font = '10px Arial';
-        ctx.fillText('© 2024 Zolnoi • NASSCOM Showcase', canvas.width / 2, qrY + qrSize + 80);
-        
-        // Download the enhanced image
-        canvas.toBlob((blob) => {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.download = 'zolnoi-contact-form-qr.png';
-          link.href = url;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        });
+        // Continue with QR code generation after logo loads
+        generateQRCode();
       };
-      qrImage.src = qrCodeUrl;
+      
+      logoImage.onerror = () => {
+        // Fallback: draw text logo if image fails to load
+        ctx.fillStyle = '#00D4AA';
+        ctx.font = 'bold 32px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ZOLNOI', canvas.width / 2, 60);
+        
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '14px Arial, sans-serif';
+        ctx.fillText('AI for energy efficiency and sustainability in Manufacturing', canvas.width / 2, 85);
+        
+        // Continue with QR code generation
+        generateQRCode();
+      };
+      
+      const generateQRCode = () => {
+        const qrImage = new Image();
+        qrImage.onload = () => {
+          // Draw QR code centered and larger
+          const qrSize = 320;
+          const qrY = 150;
+          const qrX = (canvas.width - qrSize) / 2;
+          
+          // Add subtle shadow for QR code
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 4;
+          
+          // Draw white background for QR code
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+          
+          // Reset shadow
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+          
+          // Draw QR code
+          ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+          
+          // Add elegant border around QR code
+          ctx.strokeStyle = '#00D4AA';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16);
+          
+          // Add inner border
+          ctx.strokeStyle = '#E2E8F0';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
+          
+          // Add instructions with better styling
+          ctx.fillStyle = '#00D4AA';
+          ctx.font = 'bold 20px Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Scan to access our contact form', canvas.width / 2, qrY + qrSize + 40);
+          
+          // Add subtitle
+          ctx.fillStyle = '#94A3B8';
+          ctx.font = '14px Arial, sans-serif';
+          ctx.fillText('Connect with Zolnoi', canvas.width / 2, qrY + qrSize + 65);
+          
+          // Add URL with better formatting
+          ctx.fillStyle = '#64748B';
+          ctx.font = '12px Arial, sans-serif';
+          const url = window.location.href;
+          const maxWidth = canvas.width - 40;
+          if (ctx.measureText(url).width > maxWidth) {
+            // Split URL if too long
+            const parts = url.split('/');
+            const domain = parts[0] + '//' + parts[2];
+            const path = parts.slice(3).join('/');
+            ctx.fillText(domain, canvas.width / 2, qrY + qrSize + 90);
+            ctx.fillText(path, canvas.width / 2, qrY + qrSize + 110);
+          } else {
+            ctx.fillText(url, canvas.width / 2, qrY + qrSize + 90);
+          }
+          
+          // Add decorative line
+          ctx.strokeStyle = '#00D4AA';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(canvas.width / 2 - 50, qrY + qrSize + 130);
+          ctx.lineTo(canvas.width / 2 + 50, qrY + qrSize + 130);
+          ctx.stroke();
+          
+          // Add footer with better styling
+          ctx.fillStyle = '#64748B';
+          ctx.font = '11px Arial, sans-serif';
+          ctx.fillText('© 2024 Zolnoi • NASSCOM Showcase', canvas.width / 2, qrY + qrSize + 160);
+          
+          // Add tagline at bottom
+          ctx.fillStyle = '#94A3B8';
+          ctx.font = '10px Arial, sans-serif';
+          ctx.fillText('AI for energy efficiency and sustainability in Manufacturing', canvas.width / 2, qrY + qrSize + 180);
+          
+          // Download the enhanced image
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'zolnoi-contact-form-qr.png';
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          });
+        };
+        qrImage.src = qrCodeUrl;
+      };
+      
+      logoImage.src = '/logo_with_text_and_tagline.svg';
     }
   };
 
