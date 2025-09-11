@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { base } from '../lib/airtableClient';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const emailRegex = /^(?:[A-Z0-9._%+-]+)@(?:[A-Z0-9.-]+)\.[A-Z]{2,}$/i;
 
 export default function ContactForm() {
-  const [form, setForm] = useState({ name: '', email: '', company: '' });
+  const [form, setForm] = useState({ name: '', email: '', company: '', purpose: '', comment: '' });
   const [touched, setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [duplicate, setDuplicate] = useState(false);
   const navigate = useNavigate();
 
-  const isValid = form.name.trim() && emailRegex.test(form.email) && form.company.trim();
+  const isValid = form.name.trim() && emailRegex.test(form.email) && form.company.trim() && form.purpose.trim();
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -30,25 +30,38 @@ export default function ContactForm() {
     setSubmitting(true);
     setError('');
     setDuplicate(false);
+    
     try {
-      const { error: insertError } = await supabase.from('contact_submissions').insert({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        company: form.company.trim(),
-        source: 'website'
-      });
-      if (insertError) {
-        // 23505 unique violation
-        if (insertError.code === '23505') {
-          setDuplicate(true);
-          navigate(`/thanks?name=${encodeURIComponent(form.name.trim())}`);
-          return;
-        }
-        throw insertError;
+      // Check if email already exists
+      const existingRecords = await base('Table 1')
+        .select({
+          filterByFormula: `{Email} = "${form.email.trim()}"`
+        })
+        .firstPage();
+
+      if (existingRecords.length > 0) {
+        setDuplicate(true);
+        navigate(`/thanks?name=${encodeURIComponent(form.name.trim())}`);
+        return;
       }
+
+      // Create new record
+      await base('Table 1').create([
+        {
+          fields: {
+            'Name': form.name.trim(),
+            'Email': form.email.trim(),
+            'Company': form.company.trim(),
+            'Purpose': form.purpose.trim(),
+            'Comment': form.comment.trim(),
+            'Source': 'Website'
+          }
+        }
+      ]);
+
       navigate(`/thanks?name=${encodeURIComponent(form.name.trim())}`);
     } catch (err) {
-      console.error(err);
+      console.error('Airtable error:', err);
       setError('We could not save your details. Please retry or email hello@zolnoi.com');
     } finally {
       setSubmitting(false);
@@ -100,6 +113,31 @@ export default function ContactForm() {
             <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
           </div>
           {touched.company && !form.company.trim() && <p className="text-xs text-red-400">Company name is required.</p>}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="purpose" className="block text-sm font-medium text-slate-200">Purpose</label>
+          <div className="relative group">
+            <select id="purpose" name="purpose" className="input-field peer" value={form.purpose} onChange={handleChange} onBlur={handleBlur} required>
+              <option value="">Select your purpose</option>
+              <option value="Partnership">Partnership</option>
+              <option value="Investment">Investment</option>
+              <option value="Pilot Project">Pilot Project</option>
+              <option value="Platform Exploration">Platform Exploration</option>
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Other">Other</option>
+            </select>
+            <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
+          </div>
+          {touched.purpose && !form.purpose.trim() && <p className="text-xs text-red-400">Please select a purpose.</p>}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="comment" className="block text-sm font-medium text-slate-200">Comment / Note <span className="text-slate-500">(Optional)</span></label>
+          <div className="relative group">
+            <textarea id="comment" name="comment" rows="3" placeholder="Tell us more about your interest or any specific requirements..." className="input-field peer resize-none" value={form.comment} onChange={handleChange} onBlur={handleBlur} />
+            <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
+          </div>
         </div>
       </div>
 
