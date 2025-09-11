@@ -33,6 +33,80 @@ export default function QRCodeGenerator() {
     }
   };
 
+  const downloadQRCode = async () => {
+    if (qrCodeUrl) {
+      // Create a canvas with more content
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size for a more detailed QR code
+      canvas.width = 400;
+      canvas.height = 500;
+      
+      // Fill background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Add header with company info
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(0, 0, canvas.width, 80);
+      
+      // Company name
+      ctx.fillStyle = '#00D4AA';
+      ctx.font = 'bold 24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('ZOLNOI', canvas.width / 2, 30);
+      
+      // Tagline
+      ctx.fillStyle = '#64748B';
+      ctx.font = '12px Arial';
+      ctx.fillText('AI for energy efficiency and sustainability in Manufacturing', canvas.width / 2, 50);
+      
+      // Add QR code (larger)
+      const qrImage = new Image();
+      qrImage.onload = () => {
+        // Draw QR code centered and larger
+        const qrSize = 280;
+        const qrX = (canvas.width - qrSize) / 2;
+        const qrY = 100;
+        ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+        
+        // Add border around QR code
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10);
+        
+        // Add instructions
+        ctx.fillStyle = '#0F172A';
+        ctx.font = 'bold 16px Arial';
+        ctx.fillText('Scan to access our contact form', canvas.width / 2, qrY + qrSize + 30);
+        
+        // Add URL
+        ctx.fillStyle = '#64748B';
+        ctx.font = '12px Arial';
+        ctx.fillText(window.location.href, canvas.width / 2, qrY + qrSize + 50);
+        
+        // Add footer
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = '10px Arial';
+        ctx.fillText('© 2024 Zolnoi • NASSCOM Showcase', canvas.width / 2, qrY + qrSize + 80);
+        
+        // Download the enhanced image
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = 'zolnoi-contact-form-qr.png';
+          link.href = url;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        });
+      };
+      qrImage.src = qrCodeUrl;
+    }
+  };
+
   return (
     <div className="relative">
       <button
@@ -79,6 +153,15 @@ export default function QRCodeGenerator() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
                 Copy
+              </button>
+              <button
+                onClick={downloadQRCode}
+                className="flex-1 inline-flex items-center justify-center gap-1 rounded-md bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600/30 px-3 py-2 text-xs font-medium text-slate-200 transition whitespace-nowrap"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download
               </button>
               <button
                 onClick={() => setIsVisible(false)}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import heroLogo from '/logo_with_text_and_tagline.png';
+import heroLogo from '/logo_with_text_and_tagline.svg';
 import QRCodeGenerator from './QRCodeGenerator.jsx';
 
 export default function Layout() {
@@ -10,7 +10,7 @@ export default function Layout() {
       <main className="relative z-10 w-full">
         <div className="mx-auto w-full max-w-7xl px-6 py-8 md:py-12 grid md:grid-cols-2 gap-8 md:gap-12 items-start md:items-center">
           <div className="space-y-8 animate-fade-in hidden md:block">
-            <img src={heroLogo} alt="Zolnoi" className="w-[420px] max-w-full drop-shadow-2xl select-none" draggable={false} />
+            <img src={heroLogo} alt="Zolnoi" className="w-[500px] max-w-full drop-shadow-2xl select-none" draggable={false} />
             <p className="text-slate-400 max-w-md leading-relaxed text-sm">Next-generation intelligence infrastructure. We partner with forward-looking teams to accelerate innovation responsibly.</p>
             <div className="flex gap-4">
               <a href="https://www.zolnoi.com" target="_blank" rel="noopener noreferrer" className="btn-primary h-11 px-6">Visit Website</a>
