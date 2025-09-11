@@ -32,6 +32,10 @@ A lightweight contact capture page for a startup (NASSCOM incubator showcase rea
 
 Visit http://localhost:5173
 
+## Live Site
+
+🌐 **Production**: https://connect.zolnoi.app
+
 ## Environment Variables
 
 Defined in `.env` (never commit actual secrets):
