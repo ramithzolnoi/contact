@@ -41,7 +41,7 @@ export default function QRCodeGenerator() {
       
       // Set canvas size for a more detailed QR code
       canvas.width = 500;
-      canvas.height = 700;
+      canvas.height = 600;
       
       // Create gradient background
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -62,11 +62,23 @@ export default function QRCodeGenerator() {
       const logoImage = new Image();
       logoImage.crossOrigin = 'anonymous'; // Enable CORS
       logoImage.onload = () => {
-        // Draw logo at the top
-        const logoWidth = 300;
-        const logoHeight = 80;
+        // Draw logo at the top with proper aspect ratio
+        const maxLogoWidth = 300;
+        const maxLogoHeight = 80;
+        
+        // Calculate aspect ratio to maintain proportions
+        const aspectRatio = logoImage.width / logoImage.height;
+        let logoWidth = maxLogoWidth;
+        let logoHeight = maxLogoWidth / aspectRatio;
+        
+        // If height exceeds max, scale down by height
+        if (logoHeight > maxLogoHeight) {
+          logoHeight = maxLogoHeight;
+          logoWidth = maxLogoHeight * aspectRatio;
+        }
+        
         const logoX = (canvas.width - logoWidth) / 2;
-        const logoY = 30;
+        const logoY = 20;
         ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight);
         
         // Continue with QR code generation after logo loads
@@ -93,7 +105,7 @@ export default function QRCodeGenerator() {
         qrImage.onload = () => {
           // Draw QR code centered and larger
           const qrSize = 320;
-          const qrY = 150;
+          const qrY = 120;
           const qrX = (canvas.width - qrSize) / 2;
           
           // Add subtle shadow for QR code
@@ -127,18 +139,18 @@ export default function QRCodeGenerator() {
           
           // Add instructions with better styling
           ctx.fillStyle = '#00D4AA';
-          ctx.font = 'bold 20px Arial, sans-serif';
+          ctx.font = 'bold 18px Arial, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('Scan to access our contact form', canvas.width / 2, qrY + qrSize + 40);
+          ctx.fillText('Scan to access our contact form', canvas.width / 2, qrY + qrSize + 30);
           
           // Add subtitle
           ctx.fillStyle = '#94A3B8';
-          ctx.font = '14px Arial, sans-serif';
-          ctx.fillText('Connect with Zolnoi', canvas.width / 2, qrY + qrSize + 65);
+          ctx.font = '13px Arial, sans-serif';
+          ctx.fillText('Connect with Zolnoi', canvas.width / 2, qrY + qrSize + 50);
           
           // Add URL with better formatting
           ctx.fillStyle = '#64748B';
-          ctx.font = '12px Arial, sans-serif';
+          ctx.font = '11px Arial, sans-serif';
           const url = window.location.href;
           const maxWidth = canvas.width - 40;
           if (ctx.measureText(url).width > maxWidth) {
@@ -146,29 +158,29 @@ export default function QRCodeGenerator() {
             const parts = url.split('/');
             const domain = parts[0] + '//' + parts[2];
             const path = parts.slice(3).join('/');
-            ctx.fillText(domain, canvas.width / 2, qrY + qrSize + 90);
-            ctx.fillText(path, canvas.width / 2, qrY + qrSize + 110);
+            ctx.fillText(domain, canvas.width / 2, qrY + qrSize + 70);
+            ctx.fillText(path, canvas.width / 2, qrY + qrSize + 85);
           } else {
-            ctx.fillText(url, canvas.width / 2, qrY + qrSize + 90);
+            ctx.fillText(url, canvas.width / 2, qrY + qrSize + 70);
           }
           
           // Add decorative line
           ctx.strokeStyle = '#00D4AA';
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(canvas.width / 2 - 50, qrY + qrSize + 130);
-          ctx.lineTo(canvas.width / 2 + 50, qrY + qrSize + 130);
+          ctx.moveTo(canvas.width / 2 - 50, qrY + qrSize + 100);
+          ctx.lineTo(canvas.width / 2 + 50, qrY + qrSize + 100);
           ctx.stroke();
           
           // Add footer with better styling
           ctx.fillStyle = '#64748B';
-          ctx.font = '11px Arial, sans-serif';
-          ctx.fillText('© 2024 Zolnoi • NASSCOM Showcase', canvas.width / 2, qrY + qrSize + 160);
+          ctx.font = '10px Arial, sans-serif';
+          ctx.fillText('© 2024 Zolnoi • NASSCOM Showcase', canvas.width / 2, qrY + qrSize + 120);
           
           // Add tagline at bottom
           ctx.fillStyle = '#94A3B8';
-          ctx.font = '10px Arial, sans-serif';
-          ctx.fillText('AI for energy efficiency and sustainability in Manufacturing', canvas.width / 2, qrY + qrSize + 180);
+          ctx.font = '9px Arial, sans-serif';
+          ctx.fillText('AI for energy efficiency and sustainability in Manufacturing', canvas.width / 2, qrY + qrSize + 135);
           
           // Download the enhanced image
           canvas.toBlob((blob) => {
