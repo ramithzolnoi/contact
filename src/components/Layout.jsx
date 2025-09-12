@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import heroLogo from '/logo_with_text_and_tagline.svg';
-import logoWithText from '/logo_with_text_and_tagline.svg';
+import logoOnly from '/logo.svg';
 import QRCodeGenerator from './QRCodeGenerator.jsx';
 
 export default function Layout() {
@@ -21,7 +21,7 @@ export default function Layout() {
           </div>
           <div className="relative">
             <div className="flex justify-between items-center mb-4 md:justify-end">
-              <img src={logoWithText} alt="Zolnoi" className="h-12 w-auto drop-shadow-lg select-none md:hidden" draggable={false} />
+              <img src={logoOnly} alt="Zolnoi" className="h-9 w-auto drop-shadow-lg select-none md:hidden" draggable={false} />
               <QRCodeGenerator />
             </div>
             <Outlet />
