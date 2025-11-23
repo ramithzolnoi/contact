@@ -6,14 +6,14 @@ import { motion } from 'framer-motion';
 const emailRegex = /^(?:[A-Z0-9._%+-]+)@(?:[A-Z0-9.-]+)\.[A-Z]{2,}$/i;
 
 export default function ContactForm() {
-  const [form, setForm] = useState({ name: '', email: '', company: '', purpose: '', comment: '' });
+  const [form, setForm] = useState({ name: '', title: '', company: '', email: '', mobileNumber: '', purpose: '', mainPriority: '' });
   const [touched, setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [duplicate, setDuplicate] = useState(false);
   const navigate = useNavigate();
 
-  const isValid = form.name.trim() && emailRegex.test(form.email) && form.company.trim() && form.purpose.trim();
+  const isValid = form.name.trim() && form.title.trim() && form.company.trim() && emailRegex.test(form.email) && form.purpose.trim();
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -50,10 +50,12 @@ export default function ContactForm() {
         {
           fields: {
             'Name': form.name.trim(),
-            'Email': form.email.trim(),
+            'Title': form.title.trim(),
             'Company': form.company.trim(),
+            'Email': form.email.trim(),
+            'Mobile Number': form.mobileNumber.trim() || undefined,
             'Purpose': form.purpose.trim(),
-            'Comment': form.comment.trim(),
+            'Main Priority / Problem Area': form.mainPriority.trim() || undefined,
             'Source': 'Website'
           }
         }
@@ -89,7 +91,7 @@ export default function ContactForm() {
 
       <div className="grid gap-8">
         <div className="space-y-2">
-          <label htmlFor="name" className="block text-sm font-medium text-slate-200">Name</label>
+          <label htmlFor="name" className="block text-sm font-medium text-slate-200">Name <span className="text-red-400">*</span></label>
           <div className="relative group">
             <input id="name" name="name" type="text" placeholder="Your full name" className="input-field peer" value={form.name} onChange={handleChange} onBlur={handleBlur} required />
             <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
@@ -98,16 +100,16 @@ export default function ContactForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium text-slate-200">Email</label>
-            <div className="relative group">
-              <input id="email" name="email" type="email" placeholder="name@company.com" className="input-field peer" value={form.email} onChange={handleChange} onBlur={handleBlur} required />
-              <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
-            </div>
-            {touched.email && !emailRegex.test(form.email) && <p className="text-xs text-red-400">Enter a valid email address.</p>}
+          <label htmlFor="title" className="block text-sm font-medium text-slate-200">Title <span className="text-red-400">*</span></label>
+          <div className="relative group">
+            <input id="title" name="title" type="text" placeholder="Your job title" className="input-field peer" value={form.title} onChange={handleChange} onBlur={handleBlur} required />
+            <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
+          </div>
+          {touched.title && !form.title.trim() && <p className="text-xs text-red-400">Title is required.</p>}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="company" className="block text-sm font-medium text-slate-200">Company</label>
+          <label htmlFor="company" className="block text-sm font-medium text-slate-200">Company <span className="text-red-400">*</span></label>
           <div className="relative group">
             <input id="company" name="company" type="text" placeholder="Organization / Startup name" className="input-field peer" value={form.company} onChange={handleChange} onBlur={handleBlur} required />
             <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
@@ -116,16 +118,32 @@ export default function ContactForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="purpose" className="block text-sm font-medium text-slate-200">Purpose</label>
+          <label htmlFor="email" className="block text-sm font-medium text-slate-200">Email <span className="text-red-400">*</span></label>
+            <div className="relative group">
+              <input id="email" name="email" type="email" placeholder="name@company.com" className="input-field peer" value={form.email} onChange={handleChange} onBlur={handleBlur} required />
+              <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
+            </div>
+            {touched.email && !emailRegex.test(form.email) && <p className="text-xs text-red-400">Enter a valid email address.</p>}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="mobileNumber" className="block text-sm font-medium text-slate-200">Mobile Number <span className="text-slate-500">(Optional)</span></label>
+          <div className="relative group">
+            <input id="mobileNumber" name="mobileNumber" type="tel" placeholder="Your mobile number" className="input-field peer" value={form.mobileNumber} onChange={handleChange} onBlur={handleBlur} />
+            <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="purpose" className="block text-sm font-medium text-slate-200">Purpose <span className="text-red-400">*</span></label>
           <div className="relative group">
             <select id="purpose" name="purpose" className="input-field peer" value={form.purpose} onChange={handleChange} onBlur={handleBlur} required>
               <option value="">Select your purpose</option>
               <option value="Partnership">Partnership</option>
-              <option value="Investment">Investment</option>
-              <option value="Pilot Project">Pilot Project</option>
-              <option value="Platform Exploration">Platform Exploration</option>
+              <option value="Demo call">Demo call</option>
+              <option value="Energy saving - free consult">Energy saving - free consult</option>
+              <option value="Predictive Maintenance - free consult">Predictive Maintenance - free consult</option>
               <option value="General Inquiry">General Inquiry</option>
-              <option value="Other">Other</option>
             </select>
             <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
           </div>
@@ -133,9 +151,9 @@ export default function ContactForm() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="comment" className="block text-sm font-medium text-slate-200">Comment / Note <span className="text-slate-500">(Optional)</span></label>
+          <label htmlFor="mainPriority" className="block text-sm font-medium text-slate-200">Main Priority / Problem Area <span className="text-slate-500">(Optional)</span></label>
           <div className="relative group">
-            <textarea id="comment" name="comment" rows="3" placeholder="Tell us more about your interest or any specific requirements..." className="input-field peer resize-none" value={form.comment} onChange={handleChange} onBlur={handleBlur} />
+            <textarea id="mainPriority" name="mainPriority" rows="3" placeholder="Tell us about your main priority or problem area..." className="input-field peer resize-none" value={form.mainPriority} onChange={handleChange} onBlur={handleBlur} />
             <div className="pointer-events-none absolute inset-px rounded-md border border-transparent group-hover:border-brand-500/30 peer-focus:border-brand-500/50 transition" />
           </div>
         </div>
